@@ -1,0 +1,7 @@
+servicios:
+  - nombre: "API Pública de GitHub"
+    url: "https://github.com"
+  - nombre: "Estado de Oracle Cloud (OCI)"
+    url: "https://oraclecloud.com"
+  - nombre: "Sitio de Prueba Caído (Simulación)"
+    url: "https://httpbin.org"
