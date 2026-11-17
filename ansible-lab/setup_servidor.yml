@@ -1,0 +1,30 @@
+---
+- name: Configuración base y hardening de servidor Linux
+  hosts: servidores_web
+  become: yes
+
+  tasks:
+    - name: 1. Actualizar caché de paquetes apt
+      apt:
+        update_cache: yes
+
+    - name: 2. Instalar herramientas esenciales de diagnóstico y red
+      apt:
+        name:
+          - htop
+          - net-tools
+          - tree
+        state: present
+
+    - name: 3. Crear carpeta corporativa para aplicaciones
+      file:
+        path: /opt/devops-app
+        state: directory
+        mode: '0755'
+
+    - name: 4. Desplegar archivo de información del sistema
+      copy:
+        dest: /opt/devops-app/info.txt
+        content: |
+          Servidor configurado automáticamente por Ansible.
+          Ingeniero responsable: Ivan Valenzuela
