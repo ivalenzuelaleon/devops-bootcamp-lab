@@ -1,0 +1,40 @@
+name: DevOps CI Pipeline - Validación y Docker
+
+# Se ejecuta automáticamente en cada push o pull request a la rama main
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  validar-codigo-e-infraestructura:
+    name: 1. Linting de Scripts y Ansible
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar código del repositorio
+        uses: actions/checkout@v4
+
+      - name: Validar sintaxis de Bash (healthcheck.sh)
+        run: bash -n healthcheck.sh
+
+      - name: Instalar Ansible y validar Playbook
+        run: |
+          sudo apt-get update && sudo apt-get install -y ansible
+          ansible-playbook --syntax-check ansible-lab/setup_servidor.yml
+
+  construir-y-probar-docker:
+    name: 2. Build & Test de Contenedor Docker
+    runs-on: ubuntu-latest
+    needs: validar-codigo-e-infraestructura
+
+    steps:
+      - name: Descargar código del repositorio
+        uses: actions/checkout@v4
+
+      - name: Construir imagen Docker del Monitor OCI
+        run: docker build -t monitor-oci:ci-test .
+
+      - name: Ejecutar prueba funcional dentro del contenedor
+        run: docker run --rm monitor-oci:ci-test
